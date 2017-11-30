@@ -76,14 +76,14 @@ public class AutocompletePortlet extends MVCPortlet {
 	private JSONObject executeSearchQuery(String searchword, SearchContext searchContext, LiferayPortletRequest portletRequest, LiferayPortletResponse portletResponse) {
 
 		JSONObject json = JSONFactoryUtil.createJSONObject();
-		Indexer indexer = IndexerRegistryUtil.getIndexer(JournalArticle.class);
+		Indexer<JournalArticle> indexer = IndexerRegistryUtil.getIndexer(JournalArticle.class);
 		AssetRendererFactory<JournalArticle> journalArticleAssetRendererFactory = AssetRendererFactoryRegistryUtil
 				.getAssetRendererFactoryByClass(JournalArticle.class);
 		try {
 			searchContext.setKeywords(searchword);
-			searchContext.setScopeStrict(true);
-			BooleanQuery fullQuery = indexer.getFullQuery(searchContext);
 			Hits hits = indexer.search(searchContext);
+			System.out.println(hits.getLength());
+			//I DON'T THINK IT IS NECESSARY TO DO THIS FILTER IN JAVA (elastic does it anyway for you; you're using the JournalArticle indexer)
 			hits.toList().stream().filter(r -> r.get("entryClassName").equals(JOURNAL_ARTICLE)).forEach(r -> {
 				long resourcePrimaryKey = Long.parseLong(r.get("entryClassPK"));
 				JournalArticle ja;
